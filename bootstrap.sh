@@ -1,10 +1,10 @@
 #!/bin/sh
 
-XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/state}"
 key="$XDG_STATE_HOME/ssh/id_ed25519_github"
 comment="$(whoami)@$(cat /etc/hostname)"
 
-pacman -Syu --noconfirm zsh github-cli git openssh
+sudo pacman -Syu --noconfirm zsh github-cli git openssh
 
 mkdir -p "$XDG_STATE_HOME/ssh"
 ssh-keygen \
@@ -14,10 +14,13 @@ ssh-keygen \
     -N "" \
     <<< y # overwrite
 
-gh auth login
+gh auth login -s admin:public_key
 gh auth setup-git --hostname github.com
-printf "{\"title\":\"$comment\",\"key\":\"$(cat "$key")\"}" \
-    | gh api user/keys --input - --method POST
+gh api \
+    --method POST \
+    /user/keys \
+    -f title="$comment" \
+    -f key="$(cat $key.pub)"
 
 cd "$HOME"
 git clone \
