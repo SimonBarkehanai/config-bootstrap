@@ -24,5 +24,6 @@ git clone \
     -c "core.sshCommand=ssh -i \"$key\" -F /dev/null" \
     git@github.com:SimonBarkehanai/config.git
 cd config
+git submodule update --init --recursive
 
 zsh ./setup.sh
